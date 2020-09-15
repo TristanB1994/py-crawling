@@ -10,6 +10,7 @@ def getContent(pageUrl):
 
         content = None
         links = []
+        refs = []
         path = pathlib.Path(pageUrl)
         # styles = None
         # js = []
@@ -32,18 +33,12 @@ def getContent(pageUrl):
             print("URLError: {}".format(e.response))
         else:
             content = BeautifulSoup(conn.content, 'html.parser')
-        
-        for x in content.find_all('link'):
-            links.append(x)
 
-        print('---- CONTENT.FIND_ALL LINKS FINISHED ----')
-        print(f'Path is: {path}')
-
-        for x in content.find_all('a'):
-            links.append(x)
-
-        print('---- CONTENT.FIND_ALL a FINISHED ----')
-
+        for x in content.select('a[href]'):
+            if x['href'][0] == '/':
+                links.append(pageUrl+x['href'][1:])
+            elif x['href'][:4] == 'http':
+                links.append(x['href'])
         
         payload = { 'content':content, 'links':links}
 
@@ -52,7 +47,9 @@ def getContent(pageUrl):
 
             
 
-# def getpages(url):
+def getLinks(content):
+    atags = content.select('a[href]')
+
     
 
 def getPic(url, file):
