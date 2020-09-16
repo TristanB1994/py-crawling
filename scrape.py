@@ -40,8 +40,13 @@ def getContent(pageUrl):
             elif x['href'][:4] == 'http':
                 links.append(x['href'])
 
-        imgstags = doc['content'.select('img[src]') 
-        imglinks = [ url+x['src'][1:] for x in imgs if not ( x['src'][:4] == 'http' or x['src'][:2] == '//' )]
+        if not pageUrl[-1:] == '/':
+            print(pageUrl)
+            pageUrl = pageUrl+'/'
+            print(pageUrl)
+
+        imgstags = content.select('img[src]')
+        imglinks = [ pageUrl+x['src'][1:] for x in imgstags if not (x['src'][:4] == 'http' or x['src'][:2] == '//') ]
 
         payload = { 'content':content, 'links':links, 'imglinks':imglinks}
 
@@ -71,4 +76,17 @@ def splitext(path):
     url = pathlib.Path(path)
     ext = url.name.split('.')[-1]
     return ext
-        
+
+
+
+def getallimgs(links, alllinks):
+
+    if alllinks == []:
+
+        for f, x in enumerate( links ):
+            print(f'{f} : {x}')
+            doc = getContent(x)
+            if doc['imglinks']:
+                for c, z in enumerate( doc['imglinks'] ):
+                    alllinks.append(z)
+                    print(f'{c} : {z}')
