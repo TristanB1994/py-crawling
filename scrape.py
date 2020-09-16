@@ -39,17 +39,18 @@ def getContent(pageUrl):
                 links.append(pageUrl+x['href'][1:])
             elif x['href'][:4] == 'http':
                 links.append(x['href'])
-        
-        payload = { 'content':content, 'links':links}
+
+        imgstags = doc['content'.select('img[src]') 
+        imglinks = [ url+x['src'][1:] for x in imgs if not ( x['src'][:4] == 'http' or x['src'][:2] == '//' )]
+
+        payload = { 'content':content, 'links':links, 'imglinks':imglinks}
 
         return payload            
-        
-
-            
 
 def getLinks(content):
-    atags = content.select('a[href]')
-
+    imgtags = content.select('img[scr]')
+    srcs = [ x['src'] for x in imgtags ]
+    return srcs
     
 
 def getPic(url, file):
