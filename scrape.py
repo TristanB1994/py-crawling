@@ -3,10 +3,11 @@ import requests
 import requests.exceptions 
 # from usp.tree import sitemap_tree_for_homepage
 import pathlib
+import time
 
 docUrl = 'https://www.docpace.com/'
 
-def getContent(pageUrl):
+def getContent(pageUrl, root):
 
         content = None
         links = []
@@ -40,13 +41,16 @@ def getContent(pageUrl):
             elif x['href'][:4] == 'http':
                 links.append(x['href'])
 
+        if not root[-1:] == '/':
+            root = root+'/'
+            print(root)
         if not pageUrl[-1:] == '/':
-            print(pageUrl)
             pageUrl = pageUrl+'/'
             print(pageUrl)
 
+
         imgstags = content.select('img[src]')
-        imglinks = [ pageUrl+x['src'][1:] for x in imgstags if not (x['src'][:4] == 'http' or x['src'][:2] == '//') ]
+        imglinks = [ root+x['src'][1:] for x in imgstags if not (x['src'][:4] == 'http' or x['src'][:2] == '//') ]
 
         payload = { 'content':content, 'links':links, 'imglinks':imglinks}
 
@@ -90,3 +94,17 @@ def getallimgs(links, alllinks):
                 for c, z in enumerate( doc['imglinks'] ):
                     alllinks.append(z)
                     print(f'{c} : {z}')
+
+def getpic(url):
+    name = pathlib.Path(url).name
+    response = requests.get(url, stream=True)
+    if not response.status_code == 200:
+            print(response)
+
+    if response.status_code == 200:
+        with open(name, 'wb') as handle:
+                for block in response.iter_content(1024):
+                    if not block: 
+                        break
+                    handle.write(block)
+                print(f'{name} : written to disk')
