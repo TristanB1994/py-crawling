@@ -13,9 +13,6 @@ def getContent(pageUrl, root):
         links = []
         refs = []
         path = pathlib.Path(pageUrl)
-        # styles = None
-        # js = []
-        # endpoints = None
 
         headers = {
             'Access-Control-Allow-Origin':'*',
@@ -26,7 +23,6 @@ def getContent(pageUrl, root):
         }
         
         try:
-            # conn = urllib.request.urlopen(pageUrl)
             conn = requests.get(pageUrl, headers=headers)
         except requests.HTTPError as e:
             print("HTTPError: {}".format(e.response))
